@@ -1,22 +1,14 @@
 FROM debian:jessie
 
-# install curl
-RUN apt-get update && apt-get install -qy curl
+RUN apt-get update && apt-get -y install curl
+RUN curl -sL https://deb.nodesource.com/setup | bash -
+RUN apt-get install -y nodejs
 
-# install go runtime
-RUN curl -s https://storage.googleapis.com/golang/go1.2.2.linux-amd64.tar.gz | tar -C /usr/local -xz
+COPY . /src
 
-# prepare go environment
-ENV GOPATH /go
-ENV GOROOT /usr/local/go
-ENV PATH $PATH:/usr/local/go/bin:/go/bin
+# Install app dependencies
+RUN cd /src; npm install
 
-# add the current build context
-ADD . /go/src/github.com/deis/helloworld
+EXPOSE  8080
 
-# compile the binary
-RUN cd /go/src/github.com/deis/helloworld && go install -v .
-
-EXPOSE 80
-
-ENTRYPOINT ["/go/bin/helloworld"]
+CMD ["node", "/src/index.js"]

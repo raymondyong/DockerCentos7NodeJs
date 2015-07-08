@@ -8,6 +8,8 @@ RUN yum install -y npm
 COPY . /src
 
 # Install app dependencies
+RUN chown -R nonroot /src
+USER nonroot
 RUN cd /src; npm install
 
 EXPOSE  8080
